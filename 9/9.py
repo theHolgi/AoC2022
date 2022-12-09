@@ -37,16 +37,17 @@ class Pos:
 
 visited = set()
 
-head = Pos()
-tail = Pos()
-visited.add(tail)
+knots = [Pos(), Pos(), Pos(), Pos(), Pos(), Pos(), Pos(), Pos(), Pos(), Pos()]
+head = knots[0]
+tail = knots[-1]
 
 with open("9.txt") as f:
    for line in f.readlines():
       d, steps = line.split(" ")
       for n in range(int(steps)):
          head.step(d)
-         tail.follow(head)
+         for i in range(1, len(knots)):
+            knots[i].follow(knots[i-1])
          if tail not in visited:
             visited.add(tail)
 
