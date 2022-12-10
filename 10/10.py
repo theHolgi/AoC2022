@@ -3,14 +3,18 @@ busy = False
 cycle = 0
 sumstrength = 0
 x = 1
+
 def check():
+   global x
    global cycle
-   global sumstrength
+   if x-1 <= cycle%40 <= x+1:
+      print('🎁', end="")
+   else:
+      print('🌲', end="")
    cycle += 1
-   if (cycle-20) % 40 == 0:
-      strength = cycle*x
-      sumstrength += strength
-      print(f"x ist {x} strength {strength} sum {sumstrength}")
+   if cycle == 40:
+      cycle = 0
+      print("")
 
 with open("10.txt") as f:
    for line in f.readlines():
