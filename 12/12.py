@@ -51,6 +51,7 @@ class Unvisited(list):
 
 max_x = None
 unvisited = Unvisited()
+
 with open("12.txt") as f:
    for y, line in enumerate(f.readlines()):
       l = []
@@ -75,21 +76,34 @@ with open("12.txt") as f:
             ziel = f
       field.append(l)
 
-
 max_x = x
 max_y = y
 
-start.weight = 0
+def reinitialize(start: Knoten):
+   global field
+   global Unvisited
+   unvisited.clear()
+   for x in field:
+      for y in x:
+         y.weight = infinite
+         unvisited.append(y)
 
-while ziel in unvisited:
-   cur = unvisited.pop_lowest()
-   for neighbor in cur.nachbarn():
-      neighbor.update(cur)
+   start.weight = 0
 
-cur = ziel
-print(f"{cur}")
-while True:
-   cur = cur.vorgaenger
-   if cur is None:
-      break
-   print(f" <- {cur}")
+def run():
+   while ziel in unvisited:
+      cur = unvisited.pop_lowest()
+      for neighbor in cur.nachbarn():
+         neighbor.update(cur)
+
+possible_starts = [y for x in field for y in x if y.hoehe == 1]
+
+shortest = 10000
+for start in possible_starts:
+   reinitialize(start)
+   run()
+   print (f"{start} has length {ziel.weight}")
+   if ziel.weight < shortest:
+      shortest = ziel.weight
+
+print (f"Shortest: {shortest}")
