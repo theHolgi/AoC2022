@@ -2,9 +2,6 @@ from typing import List
 
 infinite = 1000000
 field = []
-max_x = 9
-max_y = 9
-
 
 class Knoten:
    def __init__(self, hoehe: int, x: int, y: int):
@@ -16,18 +13,18 @@ class Knoten:
       self.y = y
 
    def reachable(self, other: "Knoten") -> bool:
-      return self.hoehe <= other.hoehe+1
+      return self.hoehe+1 >= other.hoehe
 
    def nachbarn(self) -> List["Knoten"]:
       nachbarn = []
       if self.x > 0:
-         nachbarn.append(field[self.x-1][self.y])
+         nachbarn.append(field[self.y][self.x-1])
       if self.x < max_x:
-         nachbarn.append(field[self.x+1][self.y])
+         nachbarn.append(field[self.y][self.x+1])
       if self.y > 0:
-         nachbarn.append(field[self.x][self.y-1])
+         nachbarn.append(field[self.y-1][self.x])
       if self.y < max_y:
-         nachbarn.append(field[self.x][self.y+1])
+         nachbarn.append(field[self.y+1][self.x])
       return filter(self.reachable, nachbarn)
 
    def update(self, other: "Knoten") -> bool:
@@ -39,7 +36,8 @@ class Knoten:
          return False
 
    def __repr__(self) -> str:
-      return f"[{self.x},{self.y}] ({self.weight})"
+      w = '∞' if self.weight == infinite else str(str(self.weight))
+      return f"[{self.x},{self.y}] ({self.hoehe} {w})"
 
 
 class Unvisited(list):
@@ -51,19 +49,37 @@ class Unvisited(list):
       self.remove(c)
       return c
 
-
+max_x = None
 unvisited = Unvisited()
+with open("12.txt") as f:
+   for y, line in enumerate(f.readlines()):
+      l = []
+      line = line.replace("\n", "")
+      if max_x is None:
+         max_x = len(line)
+      else:
+         assert max_x == len(line)
+      for x,c in enumerate(line):
+         if c == 'S':
+            hoehe = 1
+         elif c == 'E':
+            hoehe = 26
+         else:
+            hoehe = 1+ord(c)-ord('a')
+         f = Knoten(hoehe, x, y)
+         l.append(f)
+         unvisited.append(f)
+         if c == 'S':
+            start = f
+         elif c == 'E':
+            ziel = f
+      field.append(l)
 
-for x in range(max_x+1):
-   hoehe = 1
-   field.append([])
-   for y in range(max_y+1):
-      field[x].append(Knoten(hoehe, x, y))
-      unvisited.append(field[x][y])
 
-start = field[0][0]
+max_x = x
+max_y = y
+
 start.weight = 0
-ziel = field[max_x][max_y]
 
 while ziel in unvisited:
    cur = unvisited.pop_lowest()
@@ -73,7 +89,7 @@ while ziel in unvisited:
 cur = ziel
 print(f"{cur}")
 while True:
-   print(f" <- {cur}")
    cur = cur.vorgaenger
    if cur is None:
       break
+   print(f" <- {cur}")
