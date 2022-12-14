@@ -75,17 +75,18 @@ with open('14.txt') as f:
             grid.draw(x0,y0, x1,y1)
          x0, y0 = x1,y1
 
+grid.draw(grid.min_x-200, grid.max_y+2, grid.max_x+200, grid.max_y+2)
 sand = Sand()
 grains = 1
 done = False
 while not done:
    while sand.fall(grid):
-      if sand.left(grid):
-         done = True
-         break
+      assert not sand.left(grid)
    grid.put(sand.x, sand.y, 'o')
    sand = Sand()
+   if not grid.empty(sand.x, sand.y):
+      break
    grains += 1
 
-grains -= 2  # One about to fall off, one new already created
+# grains -= 2  # One about to fall off, one new already created
 print(f"{grid} with {grains} grains")
